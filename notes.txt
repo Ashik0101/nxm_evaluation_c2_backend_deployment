@@ -1,0 +1,10 @@
+(1) create Index
+db.sales.createIndex({"user_id":1})
+
+(2)
+db.vendors.aggregate([{$lookup:{from:"sales",localField:"_id",foreignField:"user_id",as:"sales_data"}},{$project:{_id:1,name:1,city:1,sales_data:1}}])
+
+(3)
+db.vendors.aggregate([{$lookup:{from:"sales",localField:"_id",foreignField:"user_id",as:"sales_data"}},
+{$project:{_id:1,name:1,city:1,sales_data:1}},{$unwind:"$sales_data"},{$group:{_id:"$_id",total_sales:{$sum:1},
+total_profit:{$sum:"$sales_data.profit"}}},{$sort:{"total_profit":-1}}])
